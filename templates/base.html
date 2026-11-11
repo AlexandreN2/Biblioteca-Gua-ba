@@ -1,0 +1,57 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Protótipo do portal da Biblioteca Pública Municipal de Guaíba: consulte o acervo e experimente reservas demonstrativas.">
+  <title>{% block title %}Início{% endblock %} · {{ instituicao.nome|default:'Biblioteca de Guaíba' }}</title>
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <script src="{% static 'js/site.js' %}" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+<svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5v15M12 5C8 2 4 3 2 4v15c4-2 7-1 10 1 3-2 6-3 10-1V4c-4-2-7-1-10 1Z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6m10-6v6M3 11h18m-12 5h6"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></symbol>
+</defs></svg>
+<div class="demo-bar"><div class="container"><span class="demo-dot" aria-hidden="true"></span> Ambiente de demonstração <span class="demo-detail">· Sem vínculo operacional com a prefeitura</span></div></div>
+<header class="site-header">
+  <div class="container header-main">
+    <a class="brand" href="{% url 'core:inicio' %}" aria-label="Página inicial — {{ instituicao.nome }}">
+      <span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg></span>
+      <span><span class="brand-kicker">BIBLIOTECA PÚBLICA MUNICIPAL</span><strong>{{ instituicao.nome }}</strong><span class="brand-place">Guaíba · Rio Grande do Sul</span></span>
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navegacao" hidden>Menu <span aria-hidden="true">☰</span></button>
+    <div class="header-account">
+    {% if user.is_authenticated %}<a class="button button-outline button-small" href="{% url 'reservas:minhas' %}"><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg> Minhas reservas</a><form action="{% url 'logout' %}" method="post">{% csrf_token %}<button class="text-button" type="submit">Sair</button></form>
+    {% else %}<a class="button button-outline button-small" href="{% url 'login' %}"><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg> Área do usuário</a>{% endif %}
+    </div>
+  </div>
+  <nav id="navegacao" class="site-nav" aria-label="Navegação principal"><div class="container nav-inner">
+    <a href="{% url 'core:inicio' %}" {% if request.resolver_match.url_name == 'inicio' %}aria-current="page"{% endif %}>Início</a>
+    <a href="{% url 'catalogo:lista' %}" {% if request.resolver_match.app_name == 'catalogo' %}aria-current="page"{% endif %}>Acervo</a>
+    <a href="{% url 'core:como_reservar' %}" {% if request.resolver_match.url_name == 'como_reservar' %}aria-current="page"{% endif %}>Como reservar</a>
+    <a href="{% url 'core:sobre' %}" {% if request.resolver_match.url_name == 'sobre' %}aria-current="page"{% endif %}>Sobre a biblioteca</a>
+    <a href="{% url 'core:atendimento' %}" {% if request.resolver_match.url_name == 'atendimento' %}aria-current="page"{% endif %}>Atendimento</a>
+    <a class="mobile-account" href="{% url 'reservas:minhas' %}">Área do usuário</a>
+    {% if user.is_authenticated %}<form class="mobile-account mobile-logout" action="{% url 'logout' %}" method="post">{% csrf_token %}<button class="text-button" type="submit">Sair</button></form>{% endif %}
+    <span class="nav-note">Um novo capítulo começa aqui.</span>
+  </div></nav>
+</header>
+<main id="conteudo" tabindex="-1">
+  {% if messages %}<div class="container messages" aria-live="polite">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="site-footer"><div class="container footer-grid">
+  <div><span class="footer-label">LEITURA QUE APROXIMA.</span><h2>{{ instituicao.nome }}</h2><p>Conhecimento, cultura e descobertas para Guaíba.</p><span class="footer-demo">Protótipo demonstrativo · Identidade visual provisória</span></div>
+  <nav aria-label="Links do rodapé"><a href="{% url 'catalogo:lista' %}">Explore o acervo</a><a href="{% url 'core:como_reservar' %}">Como reservar</a><a href="{% url 'core:atendimento' %}">Atendimento</a>{% if user.is_staff %}<a href="{% url 'admin:index' %}">Administração</a>{% endif %}</nav>
+  <div><h3>Uma biblioteca, muitas possibilidades.</h3><p>As reservas deste ambiente são apenas de teste e não garantem a retirada de livros reais.</p></div>
+</div><div class="container footer-bottom"><span>Guaíba / RS</span><span>Feito para ler, descobrir e compartilhar.</span></div></footer>
+</body>
+</html>

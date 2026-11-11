@@ -1,0 +1,8 @@
+<article class="book-card">
+  <a class="book-art art-{% cycle 'green' 'ochre' 'blue' 'red' %}" href="{% url 'catalogo:detalhe' obra.pk %}" tabindex="-1" aria-hidden="true">
+    <div class="mini-cover"><span class="cover-collection">ACERVO DEMONSTRATIVO</span><span class="cover-title">{{ obra.titulo }}</span><span class="cover-ornament">✳</span><span class="cover-author">{{ obra.autor }}</span></div>
+  </a>
+  <div class="book-info"><span class="eyebrow book-genre">{{ obra.genero|default:'Literatura' }}</span><h3><a href="{% url 'catalogo:detalhe' obra.pk %}">{{ obra.titulo }}</a></h3><p class="book-author">{{ obra.autor }}</p>
+  {% if obra.disponiveis %}<span class="status available"><span aria-hidden="true">●</span> Disponível para reserva</span>{% else %}<span class="status unavailable"><span aria-hidden="true">○</span> Sem exemplares disponíveis</span>{% endif %}
+  <a class="card-link" href="{% url 'catalogo:detalhe' obra.pk %}">Ver detalhes<span class="sr-only"> de {{ obra.titulo }}</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
+</article>
